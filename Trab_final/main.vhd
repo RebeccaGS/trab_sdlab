@@ -65,6 +65,9 @@ architecture Behavioral of ULA is
 
     -- Criando processo e designando entradas no controle da ULA com as saídas das respectivas operações
     P1: process(operation, A, B)
+----------------------------------------------------------------------------------------
+-- [ESSA OPERAÇÃO SEI Q PRECISA FAZER POR PRECISAR LIGAR A ENTRADA DE CONTROLE COM A RESPECTIVA
+-- SAÍDA TIPO 000 É Z0 PQ EU COLOQUEI Q É O AND, 001 É Z1 PQ COLOQUEI Q É O OR, MAS NAO SEI SE A SINTASE TA CERTA
     begin
         if (operation = "000") then -- AND
             Z <= Z0;
