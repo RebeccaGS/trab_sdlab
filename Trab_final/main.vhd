@@ -111,15 +111,15 @@ architecture Behavioral of ULA is
             Z <= Z1;
         elsif (operation = "010") then -- NOT
             Z <= Z2;
-        elsif (operation = "011") then -- XNOR
+        elsif (operation = "011") then -- soma
             Z <= Z3;
-        elsif (operation = "001") then -- OR
+        elsif (operation = "001") then -- complemento de 2
             Z <= Z4;
-        elsif (operation = "010") then -- NOT
+        elsif (operation = "010") then -- subtrator
             Z <= Z5;
-        elsif (operation = "011") then -- XNOR
+        elsif (operation = "011") then -- shifter left
             Z <= Z6;
-        elsif (operation = "001") then -- OR
+        elsif (operation = "001") then -- multiplier
             Z <= Z7;
 
         end if;
