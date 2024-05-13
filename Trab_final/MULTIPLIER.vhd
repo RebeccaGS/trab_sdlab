@@ -22,9 +22,20 @@ architecture Behavioral of multiplier is
         -- Loop para calcular a multiplicação
         for i in 0 to 3 loop        
             if (Z(0) = 0) then
-                Z <= '00';
+                Z <= '0' & Z(7 downto 1);
+            elsif (Z(0) = 1)
+                Z <= '0' & Z(7 downto 1);
+                R0 : full_adder port map(A(0), B(0), Cin, Sum(0), carry(0)); -- usa 4 somadores de 1 bit para realizar a lógica da soma
+                R1 : full_adder port map(A(1), B(1), carry(0), Sum(1), carry(1));
+                R2 : full_adder port map(A(2), B(2), carry(1), Sum(2), carry(2));
+                R3 : full_adder port map(A(3), B(3), carry(2), Sum(3), carry(3));
+                R4 : full_adder port map(A(1), B(1), carry(3), Sum(1), carry(4));
+                R5 : full_adder port map(A(2), B(2), carry(4), Sum(2), carry(5));
+                R6 : full_adder port map(A(3), B(3), carry(5), Sum(3), carry(6));           
+                R7 : full_adder port map(A(3), B(3), carry(6), Sum(3), Cout);           
             end if;
         end loop;
+    Z <= Sum;
 end Behavioral;
 
 
