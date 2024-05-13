@@ -1,6 +1,6 @@
 -- Sistemas digitais 2024.1 - UFRJ
 -- Autor: Rebecca Gomes Simão e Mariana Garcia
--- Somador completo em uma ALU
+-- Somador completo em uma ALU - VHDL
 
 
 -- Entidade somador 1 bits
@@ -49,4 +49,10 @@ architecture behavioral_ADDER of full_adder_4bit is
     R3 : full_adder port map(A(3), B(3), carry(2), Sum(3), Cout);
     -- Resultado em SUM e carry final em cout
     -- não considerada possibilidade de overflow conforme direcionamento
+    
+-----------------------------------------------------------------------------------------------------
+------- [NAO SEI SE PRECISA DESSE Z <= SUM PARA DESIGNAR SAIDA, VI ARQUIVOS COM E ARQUIVOS SEM, SE NAO PRECISAR
+------- COLOQUEI EM TODOS OS ARQUIVOS DE LOGICA, ENT É SO TIRAR DE TODOS
+    Z <= Sum;
+
 end architecture behavioral_ADDER;

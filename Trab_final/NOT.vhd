@@ -1,6 +1,6 @@
 -- Sistemas digitais 2024.1 - UFRJ
 -- Autor: Rebecca Gomes Simão e Mariana Garcia
--- NOT em uma ALU
+-- NOT em uma ALU - VHDL
 
 
 -- Entidade

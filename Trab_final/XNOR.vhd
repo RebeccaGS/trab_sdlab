@@ -1,6 +1,6 @@
 -- Sistemas digitais 2024.1 - UFRJ
 -- Autor: Rebecca Gomes Simão e Mariana Garcia
--- XNOR em uma ALU
+-- XNOR em uma ALU - VHDL
 
 
 -- Entidade

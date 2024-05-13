@@ -1,6 +1,6 @@
 -- Sistemas digitais 2024.1 - UFRJ
 -- Autor: Rebecca Gomes Simão e Mariana Garcia
--- Main da ULA
+-- Main da ULA - VHDL
 
 -- criando entidade da ULA
 entity ALU is
