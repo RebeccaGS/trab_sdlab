@@ -8,6 +8,7 @@ entity ALU is
         operation : in  std_logic_vector(2 downto 0); -- Controle da nossa ULA 
         A : in  std_logic_vector(3 downto 0);
         B : in  std_logic_vector(3 downto 0);
+        OP: in  std_logic_vector(2 downto 0);
         Z : out std_logic_vector(3 downto 0)
     );
 end ALU;
@@ -103,6 +104,7 @@ architecture Behavioral of ULA is
     P1: process(operation, A, B)
 ----------------------------------------------------------------------------------------
 -- [ESSA OPERAÇÃO SEI Q PRECISA FAZER POR PRECISAR LIGAR A ENTRADA DE CONTROLE COM A RESPECTIVA
+-- [DUVIDA: PRECISA DO PROCESSO? ENTRADAS DA ULA TEM OP, NE SO BOTAR IF OP = 000, SAIDA = Z?
 -- SAÍDA TIPO 000 É Z0 PQ EU COLOQUEI Q É O AND, 001 É Z1 PQ COLOQUEI Q É O OR, MAS NAO SEI SE A SINTASE TA CERTA
     begin
         if (operation = "000") then -- AND
