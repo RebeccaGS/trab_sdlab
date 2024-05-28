@@ -5,7 +5,6 @@
 -- criando entidade da ULA
 entity ALU is
     port (
-        operation : in  std_logic_vector(2 downto 0); -- Controle da nossa ULA 
         A : in  std_logic_vector(3 downto 0);
         B : in  std_logic_vector(3 downto 0);
         OP: in  std_logic_vector(2 downto 0);
@@ -101,27 +100,25 @@ architecture Behavioral of ULA is
 
 
     -- Criando processo e designando entradas no controle da ULA com as saídas das respectivas operações
-    P1: process(operation, A, B)
+    P1: process(OP, A, B)
 ----------------------------------------------------------------------------------------
--- [ESSA OPERAÇÃO SEI Q PRECISA FAZER POR PRECISAR LIGAR A ENTRADA DE CONTROLE COM A RESPECTIVA
--- [DUVIDA: PRECISA DO PROCESSO? ENTRADAS DA ULA TEM OP, NE SO BOTAR IF OP = 000, SAIDA = Z?
--- SAÍDA TIPO 000 É Z0 PQ EU COLOQUEI Q É O AND, 001 É Z1 PQ COLOQUEI Q É O OR, MAS NAO SEI SE A SINTASE TA CERTA
+
     begin
-        if (operation = "000") then -- AND
+        if (OP = "000") then -- AND
             Z <= Z0;
-        elsif (operation = "001") then -- OR
+        elsif (OP = "001") then -- OR
             Z <= Z1;
-        elsif (operation = "010") then -- NOT
+        elsif (OP = "010") then -- NOT
             Z <= Z2;
-        elsif (operation = "011") then -- soma
+        elsif (OP = "011") then -- soma
             Z <= Z3;
-        elsif (operation = "001") then -- complemento de 2
+        elsif (OP = "100") then -- complemento de 2
             Z <= Z4;
-        elsif (operation = "010") then -- subtrator
+        elsif (OP = "101") then -- subtrator
             Z <= Z5;
-        elsif (operation = "011") then -- shifter left
+        elsif (OP = "110") then -- shifter left
             Z <= Z6;
-        elsif (operation = "001") then -- multiplier
+        elsif (OP = "111") then -- multiplier
             Z <= Z7;
 
         end if;
