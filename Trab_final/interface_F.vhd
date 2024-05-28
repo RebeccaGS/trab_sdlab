@@ -29,7 +29,7 @@ architecture Behavioral of interface is
     -- 2) criar signals
     -- 3) chamar na main
     -- 4) definir reset e pegar A, B e OP
-    -- 5) entrar em 4_DISPLAY e mostrar em looping A, B, Z
+    -- 5) mostrar em looping A, B, Z
     -------------------------------------------------------------------------------------
     -- 1) chamar main e clk
     component main is
@@ -54,8 +54,8 @@ architecture Behavioral of interface is
     -----------------------------------------------------------------------------------------------
     -- 2) criar signals
 
-    -- definindo meus estados: setando A, setando B, setando OP e aparecendo no 4_DISPLAY as respostas
-    type tipo_estado is (1_A, 2_B, 3_OP, 4_DISPLAY, 5_Z0, 6_Z1, 7_Z2, 8_Z3, 9_Z4, 10_Z5, 11_Z6, 12_Z7);
+    -- definindo meus estados: setando A, setando B, setando OP e aparecendo as respostas
+    type tipo_estado is (1_A, 2_B, 3_OP, 5_Z0, 6_Z1, 7_Z2, 8_Z3, 9_Z4, 10_Z5, 11_Z6, 12_Z7);
     -- criando sinal estado e proximo estado, e definindo ambas como tipo_estado (assumem algum estado em tipo_estado)
     signal ESTADO, prox_estado : tipo_estado;
     -- Definindo sinais e criando variáveis de saída
