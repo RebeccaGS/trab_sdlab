@@ -1,90 +1,59 @@
+----------------------------------------------------------------------------------
 -- Sistemas digitais 2024.1 - UFRJ
 -- Autor: Rebecca Gomes Simão e Mariana Garcia
--- Mutiplicador em uma ALU - VHDL
+-- 
+-- Module Name:    MULTIPLIER - Behavioral 
+-- Description: Mutiplicador em uma ALU - VHDL
+--
+----------------------------------------------------------------------------------
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity MULTIPLIER is
+    Port ( A : in  STD_LOGIC_VECTOR (3 downto 0);
+           B : in  STD_LOGIC_VECTOR (3 downto 0);
+           Z : out  STD_LOGIC_VECTOR (3 downto 0));
+end MULTIPLIER;
+
+architecture Behavioral of MULTIPLIER is 
+
+	 component ADDER_1BIT is --Chama full adder 1 bit
+        port (
+            A, B, Cin : in  STD_LOGIC;
+            Sum, Cout : out STD_LOGIC
+        );
+    end component;
+
+        signal carry : STD_LOGIC_VECTOR(7 downto 0);
+        signal A2: STD_LOGIC_VECTOR(7 downto 0);
+        A2 <= "0000" & A(3 downto 0);
+        signal Z_Aux: STD_LOGIC_VECTOR(7 downto 0);
+        Z_Aux <= "00000000";  
 
 
--- entidade multiplicador
-entity multiplier is
-    port (
-        A, B      : in  STD_LOGIC_VECTOR(3 downto 0); -- A e B: entradas
-        Z         : out STD_LOGIC_VECTOR(7 downto 0); -- Z: saída com 8 casas
-    );
-end entity multiplier;
-
--- arquitetura do multiplicador
-architecture Behavioral of multiplier is    
-    begin
-        -- definindo A como número fixo e Z como 0 0 0 0 B3 B2 B1 B0
-        -- No deslocamento fica: A3 A2 A1 A0 e R R R R R B3 B2 B1
-        Z <= '0000' & B(3 downto 1);
-        -- criar loop para ver sempre ultimo bit de b (0 a 3 vezes: 4 vezes)
-        -- nesse loop, colocar: se b(0) = 0 -> desloca Z: Z <= '0' & Z(7 downto i)
-        -- Loop para calcular a multiplicação
-        for i in 0 to 3 loop        
-            if (Z(0) = 0) then
-                Z <= '0' & Z(7 downto 1);
-            elsif (Z(0) = 1)
-                Z <= '0' & Z(7 downto 1);
-                R0 : full_adder port map(A(0), B(0), Cin, Sum(0), carry(0)); -- usa 4 somadores de 1 bit para realizar a lógica da soma
-                R1 : full_adder port map(A(1), B(1), carry(0), Sum(1), carry(1));
-                R2 : full_adder port map(A(2), B(2), carry(1), Sum(2), carry(2));
-                R3 : full_adder port map(A(3), B(3), carry(2), Sum(3), carry(3));
-                R4 : full_adder port map(A(1), B(1), carry(3), Sum(1), carry(4));
-                R5 : full_adder port map(A(2), B(2), carry(4), Sum(2), carry(5));
-                R6 : full_adder port map(A(3), B(3), carry(5), Sum(3), carry(6));           
-                R7 : full_adder port map(A(3), B(3), carry(6), Sum(3), Cout);           
-            end if;
-        end loop;
-    Z <= Sum;
-end Behavioral;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-entity multiplicador is
-    Port (
-        a : in std_logic_vector(3 downto 0); -- multiplicando de 4 bits
-        b : in std_logic_vector(3 downto 0); -- multiplicador de 4 bits
-        resultado : out std_logic_vector(7 downto 0) -- resultado de 8 bits
-    );
-end multiplicador;
-
-architecture Behavioral of multiplicador is
 begin
-    process(a, b)
-        variable multiplicacao : std_logic_vector(7 downto 0);
-    begin
-        -- Inicializa a multiplicação com 0
-        multiplicacao := (others => '0');
-        
-        -- Loop para calcular a multiplicação
-        for i in 0 to 3 loop
-            -- Se o bit do multiplicador for 1, soma o multiplicando ao resultado
-            if b(i) = '1' then
-                multiplicacao := std_logic_vector(unsigned(multiplicacao) + unsigned(a) * 2**i);
-            end if;
-        end loop;
+		  
+		  for i in 0 to 3 loop -- fazer 4 vezes, quantidade de bits de B
+            if (B(0) = 0) then -- se ultimo bit de B = 0, só desloca
+                A2 <= Z(6 downto 0) & '0';
+                B <= '0' & B(3 downto 1);
 
-        -- Atribui o resultado ao sinal de saída
-        resultado <= multiplicacao;
-    end process;
-end Behavioral;
+            elsif (B(0) = 1) then -- se ultimo bit de B = 1, soma resultado com A deslocado
+                A2 <= Z(6 downto 0) & '0'; -- desloca A
+
+                R0 : ADDER_1BIT port map(A2(0), Z_Aux(0), Cin,      Sum(0), carry(0));
+                R1 : ADDER_1BIT port map(A2(1), Z_Aux(1), carry(0), Sum(1), carry(1));
+                R2 : ADDER_1BIT port map(A2(2), Z_Aux(2), carry(1), Sum(2), carry(2));
+                R3 : ADDER_1BIT port map(A2(3), Z_Aux(3), carry(2), Sum(3), carry(3));
+                R4 : ADDER_1BIT port map(A2(4), Z_Aux(4), carry(3), Sum(4), carry(4));
+                R5 : ADDER_1BIT port map(A2(5), Z_Aux(5), carry(4), Sum(5), carry(5));
+                R6 : ADDER_1BIT port map(A2(6), Z_Aux(6), carry(5), Sum(6), carry(6));           
+                R7 : ADDER_1BIT port map(A2(7), Z_Aux(7), carry(6), Sum(7), Cout);
+                B <= '0' & B(3 downto 1); -- desloca B				
+				
+        end if;
+    end loop;
+
+	Z <= Sum(7 downto 4);
+	
+end Behavioral;				

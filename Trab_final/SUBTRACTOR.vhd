@@ -25,19 +25,16 @@ architecture Behavioral of SUBTRACTOR is
         );
     end component;
 
-    component ADDER_1BIT is
-        port (
-			  A : in  STD_LOGIC;
-           B : in  STD_LOGIC;
-           Cin : in  STD_LOGIC;
-           Sum : out  STD_LOGIC;
-           Cout : out  STD_LOGIC);
+
+    -- Declaração do componente FULL_ADDER_4BIT
+    component FULL_ADDER_4BIT is
+        Port ( A, B : in  STD_LOGIC_VECTOR (3 downto 0);
+                Cin : in  STD_LOGIC;
+                Sum : out  STD_LOGIC_VECTOR (3 downto 0);
+                Cout : out  STD_LOGIC);
     end component;
 
-
     signal B2 : STD_LOGIC_VECTOR (3 downto 0); -- Saída do complemento de 2 de B
-    signal carry : STD_LOGIC_VECTOR (3 downto 0); -- Sinal carry para ser usado nas somas
-    signal Sum : STD_LOGIC_VECTOR (3 downto 0); -- Sinal de soma
 
 begin
 
@@ -47,13 +44,7 @@ begin
         Z => B2
     );
 
-	    -- Instâncias do full adder para realizar a soma
-    R0: ADDER_1BIT port map(A(0), B2(0), '0', Sum(0), carry(0));
-    R1: ADDER_1BIT port map(A(1), B2(1), carry(0), Sum(1), carry(1));
-    R2: ADDER_1BIT port map(A(2), B2(2), carry(1), Sum(2), carry(2));
-    R3: ADDER_1BIT port map(A(3), B2(3), carry(2), Sum(3), carry(3));
+	-- Instâncias do full adder para realizar a soma
+    U1: FULL_ADDER_4BIT Port map (A, B2,'0', Z, Cout);
 
-    -- Atribui a soma ao sinal de saída Z
-    Z <= Sum;
-
-end Behavioral; 
+end Behavioral;

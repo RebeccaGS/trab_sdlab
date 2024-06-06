@@ -13,7 +13,7 @@ entity FULL_ADDER_4BITS is
     port (
         A, B : in  STD_LOGIC_VECTOR(3 downto 0);
         Cin : in STD_LOGIC;
-        Sum : out STD_LOGIC_VECTOR(3 downto 0);
+        Z : out STD_LOGIC_VECTOR(3 downto 0);
         Cout : out STD_LOGIC
     );
 end entity FULL_ADDER_4BITS;

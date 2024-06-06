@@ -33,5 +33,5 @@ begin
     not_A <= not A;
 
     -- Adiciona 1 ao complemento de 1 para obter o complemento de 2
-    U1: FULL_ADDER_4BIT Port map (not_A, "0000",'1', Z, Cout);
+    U1: FULL_ADDER_4BIT Port map (not_A, "0001",'0', Z, Cout);
 end Behavioral;

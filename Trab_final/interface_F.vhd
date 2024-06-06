@@ -96,7 +96,6 @@ architecture Behavioral of interface is
             end if;
         end process;
 
-        -- VER COMO CHAMAR ESTADO INICIAL DE 1_A
         -- outro processo chamando estado, botao e switche
         process(ESTADO:1_A, botao, switches)
         begin
