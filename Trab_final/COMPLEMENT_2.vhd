@@ -17,7 +17,7 @@ end COMPLEMENT_2;
 
 architecture Behavioral of COMPLEMENT_2 is
     -- Declaração do componente FULL_ADDER_4BIT
-    component FULL_ADDER_4BIT is
+    component FULL_ADDER_4BITS is
         Port ( A, B : in  STD_LOGIC_VECTOR (3 downto 0);
                Cin : in  STD_LOGIC;
                Sum : out  STD_LOGIC_VECTOR (3 downto 0);
@@ -33,5 +33,5 @@ begin
     not_A <= not A;
 
     -- Adiciona 1 ao complemento de 1 para obter o complemento de 2
-    U1: FULL_ADDER_4BIT Port map (not_A, "0001",'0', Z, Cout);
+    U1: FULL_ADDER_4BITS Port map (not_A, "0001",'0', Z, Cout);
 end Behavioral;

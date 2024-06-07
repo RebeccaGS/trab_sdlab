@@ -1,45 +1,46 @@
+----------------------------------------------------------------------------------
 -- Sistemas digitais 2024.1 - UFRJ
 -- Autor: Rebecca Gomes Simão e Mariana Garcia
--- Main da ULA - VHDL
+--
+-- Module Name:    main - Behavioral 
+-- Description: Main da ULA - VHDL  
+--
+----------------------------------------------------------------------------------
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
 
--- criando entidade da ULA
-entity ALU is
-    port (
-        A : in  std_logic_vector(3 downto 0);
-        B : in  std_logic_vector(3 downto 0);
-        OP: in  std_logic_vector(2 downto 0);
-        Z : out std_logic_vector(3 downto 0)
-    );
-end ALU;
+entity main is
+    Port ( A : in  STD_LOGIC_VECTOR (3 downto 0);
+           B : in  STD_LOGIC_VECTOR (3 downto 0);
+           OP : in  STD_LOGIC_VECTOR (2 downto 0);
+           Z : out  STD_LOGIC_VECTOR (3 downto 0));
+end main;
 
+architecture Behavioral of main is
 
--- Arquitetura da ULA
-architecture Behavioral of ULA is
-    
-    -- chamando os componentes das portas
-    component AND is
+	 -- chamando os componentes das portas logicas
+    component LogicAND is
+        port (
+            A, B: in STD_LOGIC_VECTOR (3 downto 0);
+            Z   : out STD_LOGIC_VECTOR (3 downto 0)
+          ) ;
+    end component;
+	 
+    component LogicOR is
         port (
             A, B: in STD_LOGIC_VECTOR (3 downto 0);
             Z   : out STD_LOGIC_VECTOR (3 downto 0)
           ) ;
     end component;
 
-    component OR is
-        port (
-            A, B: in STD_LOGIC_VECTOR (3 downto 0);
-            Z   : out STD_LOGIC_VECTOR (3 downto 0)
-          ) ;
-    end component;
-    
-    component NOT is
+    component LogicNOT is
         port (
             A: in STD_LOGIC_VECTOR (3 downto 0);
             Z   : out STD_LOGIC_VECTOR (3 downto 0)
           ) ;
     end component;
-
-
-    -- chamando os componentes das operações lógico-aritméticas
+	 
+	     -- chamando os componentes das operações lógico-aritméticas
     component FULL_ADDER_4BITS is
         port (
             A, B : in  STD_LOGIC_VECTOR(3 downto 0);
@@ -47,62 +48,55 @@ architecture Behavioral of ULA is
             Sum : out STD_LOGIC_VECTOR(3 downto 0);
             Cout : out STD_LOGIC
         );
-    end component;
-    
-    component complement_2 is
+    end component;	
+
+    component COMPLEMENT_2 is
         port (
             A         : in  STD_LOGIC_VECTOR(3 downto 0); -- A0 A1 A2 A3
-            Z         : out STD_LOGIC_VECTOR(3 downto 0);
+            Z         : out STD_LOGIC_VECTOR(3 downto 0)
         );
-    end component;
+    end component;	
 
-    component subtrator is
+    component SUBTRACTOR is
         port (
             A, B      : in  STD_LOGIC_VECTOR(3 downto 0); -- A0 A1 A2 A3
-            Z         : out STD_LOGIC_VECTOR(3 downto 0);
+            Z         : out STD_LOGIC_VECTOR(3 downto 0)
         );
-    end component;
-
-    component shifter_left is
+    end component;	 
+	 
+    component SHIFTER is
         port (
             A         : in  STD_LOGIC_VECTOR(3 downto 0); -- A: entrada
             -- Q: quantidade de deslocamentos, quero até 3 deslocamentos para fazer o multiplicador 4 bits
-            Q         : in  STD_LOGIC_VECTOR(1 downto 0); -- 2 bits de deslocamento (de (00: 0) a (11: 3) deslocamentos)
-            Z         : out STD_LOGIC_VECTOR(3 downto 0); -- Z: saída
+            Q         : in  STD_LOGIC_VECTOR(3 downto 0); -- 2 bits de deslocamento (de (00: 0) a (11: 3) deslocamentos)
+            Z         : out STD_LOGIC_VECTOR(3 downto 0) -- Z: saída
         );
     end component;
-    
-    component multiplier is
-        port (
-            A, B      : in  STD_LOGIC_VECTOR(3 downto 0); -- A e B: entradas
-            Z         : out STD_LOGIC_VECTOR(7 downto 0); -- Z: saída com 8 casas
-        );
-    end component;
-    
 
+   component MULTIPLIER is
+       port (
+           A, B      : in  STD_LOGIC_VECTOR(3 downto 0); -- A e B: entradas
+            Z         : out STD_LOGIC_VECTOR(3 downto 0) -- Z: saída com 8 casas
+       );
+   end component;	
 
-    
     -- Definindo sinais e criando variáveis de saída
     signal Z0,Z1,Z2,Z3,Z4,Z5,Z6,Z7: STD_LOGIC_VECTOR (3 downto 0);
-    signal Cout, Bout: STD_LOGIC;
+	 signal Cout, Bout: STD_LOGIC;
 
 
-    -- designando operações com suas respectivas saídas
-    begin
-        module_AND: AND port map (A,B,Z0);
-        module_OR: OR port map (A,B,Z1);
-        module_NOT: NOT port map (A,Z2);
-        module_FULL_ADDER_4BITS: FULL_ADDER_4BITS port map (A,B,'0',Z3,Cout);
-        module_complement_2: complement_2 port map (A,Z4);
-        module_subtrator: subtrator port map (A,B,Z5);
-        module_shifter_left: shifter_left port map (A,B,Z6);
-        module_multiplier: multiplier port map (A,B,Z7);
+begin
 
-
-    -- Criando processo e designando entradas no controle da ULA com as saídas das respectivas operações
-    P1: process(OP, A, B)
-----------------------------------------------------------------------------------------
-
+    module_AND: LogicAND port map (A,B,Z0);
+    module_OR: LogicOR port map (A,B,Z1);
+    module_NOT: LogicNOT port map (A,Z2);
+    module_FULL_ADDER_4BITS: FULL_ADDER_4BITS port map (A,B,'0',Z3,Cout);
+    module_COMPLEMENT_2: COMPLEMENT_2 port map (A,Z4);
+    module_SUBTRACTOR: SUBTRACTOR port map (A,B,Z5);
+	 module_SHIFTER: SHIFTER port map (A,B,Z6);
+    module_MULTIPLIER: MULTIPLIER port map (A,B,Z7);
+	 
+    process (OP)
     begin
         if (OP = "000") then -- AND
             Z <= Z0;
@@ -110,19 +104,17 @@ architecture Behavioral of ULA is
             Z <= Z1;
         elsif (OP = "010") then -- NOT
             Z <= Z2;
-        elsif (OP = "011") then -- soma
+        elsif (OP = "011") then -- ADDER 4 BITS
             Z <= Z3;
-        elsif (OP = "100") then -- complemento de 2
+        elsif (OP = "100") then -- COMPLEMENT 2
             Z <= Z4;
-        elsif (OP = "101") then -- subtrator
+        elsif (OP = "101") then -- SUBTRACTOR
             Z <= Z5;
-        elsif (OP = "110") then -- shifter left
+        elsif (OP = "110") then -- SHIFTER
             Z <= Z6;
-        elsif (OP = "111") then -- multiplier
+        elsif (OP = "111") then -- MULTIPLIER
             Z <= Z7;
-
         end if;
-    end process P1;    
-
-    
+    end process;
+	 
 end Behavioral;
