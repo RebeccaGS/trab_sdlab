@@ -82,7 +82,7 @@ architecture Behavioral of main is
 
     -- Definindo sinais e criando variáveis de saída
     signal Z0,Z1,Z2,Z3,Z4,Z5,Z6,Z7: STD_LOGIC_VECTOR (3 downto 0);
-	 signal Cout, Bout: STD_LOGIC;
+	signal Cout: STD_LOGIC;
 
 
 begin

@@ -12,9 +12,9 @@ use IEEE.STD_LOGIC_1164.ALL;
 -- definindo entidade
 entity interface is
     Port ( switches    : in  STD_LOGIC_VECTOR(3 downto 0); -- Sw seleciona, outros, agregam valor. Exemplo: SW 1001; botão agrega esse valor a A, ou B, ou etc
-           botao, reset, clock      : in  STD_LOGIC; -- agrega valor
-           LEDS_RIGHT: out STD_LOGIC_VECTOR(7 downto 4);
-			  LEDS_LEFT: out STD_LOGIC_VECTOR(3 downto 0) -- aparece para usuário
+            botao, reset, clock      : in  STD_LOGIC; -- agrega valor
+            LEDS_RIGHT: out STD_LOGIC_VECTOR(3 downto 0);
+		    LEDS_LEFT: out STD_LOGIC_VECTOR(7 downto 4) -- aparece para usuário
     );
 
 end interface;
@@ -22,7 +22,7 @@ end interface;
 architecture Behavioral of interface is 
     -- definindo arquitetura: divido em:
     -- 1) chamar main e clk
-    -- 2) criar signals
+    -- 2) criar signals e estados
     -- 3) chamar na main
     -- 4) definir reset e pegar A, B e OP
     -- 5) mostrar em loOPing A, B, Z
@@ -47,32 +47,32 @@ architecture Behavioral of interface is
             );
     end component;
 
-	type tipo_ESTADO is (Ai, Bi, OPi, Zo, Za, Zb, Zc, Zd, Ze, Zf, Zg, Zh, Ax, Bx, OPx);
     -----------------------------------------------------------------------------------------------
-    -- 2) criar signals
+    -- 2) criar signals e estados
 
-    -- definindo meus ESTADOs: setando A, setando B, setando OP e aparecendo as respostas
+    -- definindo meus ESTADOs: setando A, setando B, setando OP, aparecendo as respostas e A auxiliar, B auxiliar e OP auxiliar
     -- criando sinal ESTADO e proximo ESTADO, e definindo ambas como tipo_ESTADO (assumem algum ESTADO em tipo_ESTADO)
+    type tipo_ESTADO is (Ai, Bi, OPi, Zo, Za, Zb, Zc, Zd, Ze, Zf, Zg, Zh, Ax, Bx, OPx);
     signal ESTADO: tipo_ESTADO := Ai;
-	 signal ESTADOx : tipo_ESTADO:= Zo;
-	 signal prox_operacaox: tipo_ESTADO := Zo;
-	 signal prox_operacao: tipo_ESTADO;
+	signal ESTADOx : tipo_ESTADO:= Zo;
+	signal prox_operacaox: tipo_ESTADO := Zo;
+	signal prox_operacao: tipo_ESTADO;
 	 
     -- Definindo sinais e criando variáveis de saída
     signal Z0,Z1,Z2,Z3,Z4,Z5,Z6,Z7: STD_LOGIC_VECTOR (3 downto 0);
     signal A,B: STD_LOGIC_VECTOR (3 downto 0):= "0000";
     signal OP: STD_LOGIC_VECTOR (2 downto 0);
-	 signal clock_f: STD_LOGIC;
-	 signal LEDS_Laux : STD_LOGIC_VECTOR(3 downto 0) := "1000";
-	 signal LEDS_Raux: STD_LOGIC_VECTOR(3 downto 0) := "0000";
+	signal clock_f: STD_LOGIC;
+	signal LEDS_Laux : STD_LOGIC_VECTOR(3 downto 0) := "0000";
+	signal LEDS_Raux: STD_LOGIC_VECTOR(3 downto 0) := "0000";
     
 	 ----------------------------------------------------------------------------------------------------
     --
 	 -- 3) mandar pra main e descobrir as saidas
     begin
 	 
-			LEDS_RIGHT <= LEDS_Raux;
-			LEDS_LEFT <= LEDS_Laux;
+		LEDS_RIGHT <= LEDS_Raux;
+		LEDS_LEFT <= LEDS_Laux;
         a1:CLK port map (clock,clock_f);
         a2:main port map(A,B,"000",Z0);
         a3:main port map(A,B,"001",Z1);
@@ -102,17 +102,13 @@ architecture Behavioral of interface is
             -- separa o que ocorre em cada ESTADO
             case ESTADO is
                 when Ai =>
-                    if botao = '1' then
                         A <= switches;
                         ESTADO <= Bi;
-                    end if;
 						  
 					
                 when Bi =>
-                    if botao = '1' then
                         B <= switches;
                         ESTADO <= OPi;
-                    end if;
 						  
 						  
 					 when OPi =>
@@ -144,7 +140,7 @@ end process;
 
 ---------------------------------------------------------------------------
     -- 5) emostrar em loOPing A, B, Z
-	 PROCESS(clock,ESTADO,reset)
+	 PROCESS(clock_f,ESTADO,reset)
 	 begin
 	 if (reset = '1') then
 	             LEDS_Raux <= "0000";
@@ -152,7 +148,7 @@ end process;
                 ESTADOx <= Zo;
 					 prox_operacaox <= Zo;
 		
-	elsif(rising_edge(clock)) then
+	elsif(rising_edge(clock_f)) then
 				if(ESTADO = OPi) then
 					prox_operacaox <= prox_operacao;
 					ESTADOx <= Ax;
