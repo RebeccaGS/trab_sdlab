@@ -1,25 +1,25 @@
 ----------------------------------------------------------------------------------
 -- Sistemas digitais 2024.1 - UFRJ
--- Autor: Rebecca Gomes Simão e Mariana Garcia
+-- Autor: Rebecca Gomes Simão e Mariana Garcia 
 -- 
--- Module Name:    LogicOR - Behavioral 
--- Description: Funçãp lógica OR em uma ALU - VHDL  
+-- Module Name:    
+-- Description: 
 --
 ----------------------------------------------------------------------------------
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
-entity LogicOR is
-    Port ( A : in  STD_LOGIC_VECTOR (3 downto 0);
+entity LogicAND is
+    Port ( A : in  STD_LOGIC_VECTOR (3 downto 0); -- 4 bits: A0 A1 A2 A3
            B : in  STD_LOGIC_VECTOR (3 downto 0);
            Z : out  STD_LOGIC_VECTOR (3 downto 0));
-end LogicOR;
+end LogicAND;
 
-architecture Behavioral of LogicOR is
+architecture Behavioral of LogicAND is
 
 begin
 
-	Z <= A or B;
+	Z <= A and B;
 
 end Behavioral;
-

@@ -1,11 +1,12 @@
 ----------------------------------------------------------------------------------
 -- Sistemas digitais 2024.1 - UFRJ
--- Autor: Rebecca Gomes Simão e Mariana Garcia
+-- Autor: Rebecca Gomes Simão e Mariana Garcia 
 -- 
--- Module Name:    LogicAND - Behavioral 
--- Description: Funçãp lógica AND em uma ALU - VHDL  
+-- Module Name:    
+-- Description: 
 --
 ----------------------------------------------------------------------------------
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
@@ -22,4 +23,3 @@ begin
 	Z <= A and B;
 
 end Behavioral;
-
