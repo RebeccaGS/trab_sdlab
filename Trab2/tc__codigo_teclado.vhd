@@ -3,7 +3,8 @@
 -- Autor: Rebecca Gomes Simão e Mariana Garcia 
 -- 
 -- Module Name:    
--- Description: 
+-- Description: pega a informação do teclado pelo pegar_dados ->
+-- escreve na armazena_fifo -> pega no traduz_ascii e une tudo no codigo_teclado para gerenciar essa operação
 --
 ----------------------------------------------------------------------------------
 
