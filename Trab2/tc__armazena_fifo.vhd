@@ -2,7 +2,7 @@
 -- Sistemas digitais 2024.1 - UFRJ
 -- Autor: Rebecca Gomes Simão e Mariana Garcia 
 -- 
--- Module Name:  armazena_fifo   
+-- Module Name:  tc__armazena_fifo   
 -- Description:  Este código VHDL implementa uma FIFO usando uma combinação de memória de registros e lógica de controle. 
 -- Os ponteiros de leitura e escrita gerenciam as posições dos dados na FIFO, enquanto os sinais cheio e vazio indicam o 
 -- estado da FIFO. O processo é controlado por um sinal de clock e reset, garantindo que as operações sejam sincronizadas 
@@ -16,7 +16,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 -- ENTIDADE
-entity armazena_fifo is
+entity tc__armazena_fifo is
     Port ( 
         -- Como genericos, as variaveis: largura_dados (8 bits) e largura_endereco (4 bits)
         -- variáveis genéricas em um port map são usadas para parametrizar componentes,
@@ -39,13 +39,13 @@ entity armazena_fifo is
             dados_saida: out std_logic_vector (largura_dados-1 downto 0)
         );
     );
-end armazena_fifo;
+end tc__armazena_fifo;
 
 
 
 -- ARQUITETURA - fifo utiliza de registradores e lógica de controle para armazenar
               -- temporariamente pacotes de dados enquanto eles estão sendo processados
-architecture Behavioral of armazena_fifo is
+architecture Behavioral of tc__armazena_fifo is
 
     -- armazenamento da fifo
     type reg_file_type is array (2**largura_endereco-1 downto 0) of std_logic_vector(largura_dados-1 downto 0);
