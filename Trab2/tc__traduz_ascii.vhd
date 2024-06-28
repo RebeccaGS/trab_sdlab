@@ -43,4 +43,3 @@ architecture Behavioral of tc__traduz_ascii is
             "00001101" when "01011010",  -- (enter, cr)
             "00101010" when others;      -- *
 end Behavioral;
-
