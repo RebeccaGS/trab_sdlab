@@ -2,66 +2,71 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
--- use IEEE.NUMERIC_STD.ALL;
+
 
 entity bcd_adder is
-    Port (
-        A : in  STD_LOGIC_VECTOR (15 downto 0); -- 4 dígitos BCD
-        B : in  STD_LOGIC_VECTOR (15 downto 0); -- 4 dígitos BCD
-        SUM : out  STD_LOGIC_VECTOR (15 downto 0); -- 4 dígitos BCD
-        CARRY_OUT : out STD_LOGIC -- Carry out final
-    );
+    Port ( A : in  STD_LOGIC_VECTOR (15 downto 0);
+           B : in  STD_LOGIC_VECTOR (15 downto 0);
+           SUM : out  STD_LOGIC_VECTOR (15 downto 0);
+           CARRY_OUT : out  STD_LOGIC);
 end bcd_adder;
 
-
 architecture Behavioral of bcd_adder is
+
+    signal digit0_sum, digit1_sum, digit2_sum, digit3_sum : STD_LOGIC_VECTOR(3 downto 0);
+    signal carry0, carry1, carry2, carry3 : STD_LOGIC;
+
+    component bcd_digit_adder
+        Port (
+            A : in  STD_LOGIC_VECTOR (3 downto 0);
+            B : in  STD_LOGIC_VECTOR (3 downto 0);
+            CIN : in STD_LOGIC;
+            SUM : out  STD_LOGIC_VECTOR (3 downto 0);
+            COUT : out STD_LOGIC
+        );
+    end component;
+
 begin
-    process (A, B)
-        variable digit0_sum, digit1_sum, digit2_sum, digit3_sum : STD_LOGIC_VECTOR(3 downto 0);
-        variable digit0, digit1, digit2, digit3 : STD_LOGIC_VECTOR(3 downto 0);
-        variable digit4, digit5, digit6, digit7 : STD_LOGIC_VECTOR(3 downto 0);
-        variable carry0, carry1, carry2, carry3 : STD_LOGIC;
+
+    digit0_adder: bcd_digit_adder
+        Port map (
+            A => A(3 downto 0),
+            B => B(3 downto 0),
+            CIN => '0',
+            SUM => digit0_sum,
+            COUT => carry0
+        );
 		  
-   begin
-        digit0 := A(3 downto 0);
-        digit1 := A(7 downto 4);
-        digit2 := A(11 downto 8);
-        digit3 := A(15 downto 12);
-
-        digit4 := B(3 downto 0);
-        digit5 := B(7 downto 4);
-        digit6 := B(11 downto 8);
-        digit7 := B(15 downto 12);
-
-        digit0_sum := digit0 + digit4;
-        carry0 := '0';
-        if digit0_sum > "1001" then
-            digit0_sum := digit0_sum + "0110";
-            carry0 := '1';
-        end if;
+    digit1_adder: bcd_digit_adder
+        Port map (
+            A => A(7 downto 4),
+            B => B(7 downto 4),
+            CIN => carry0,
+            SUM => digit1_sum,
+            COUT => carry1
+        );
 		  
-       digit1_sum := digit1 + digit5 + carry0;
-        carry1 := '0';
-        if digit1_sum > "1001" then
-            digit1_sum := digit1_sum + "0110";
-            carry1 := '1';
-        end if;
-
-        digit2_sum := digit2 + digit6 + carry1;
-        carry2 := '0';
-        if digit2_sum > "1001" then
-            digit2_sum := digit2_sum + "0110";
-            carry2 := '1';
-        end if;
+    digit2_adder: bcd_digit_adder
+        Port map (
+            A => A(11 downto 8),
+            B => B(11 downto 8),
+            CIN => carry1,
+            SUM => digit2_sum,
+            COUT => carry2
+        );
 		  
-	        digit3_sum := digit3 + digit7 + carry2;
-        carry3 := '0';
-        if digit3_sum > "1001" then
-            digit3_sum := digit3_sum + "0110";
-            carry3 := '1';
-        end if;
+    digit3_adder: bcd_digit_adder
+        Port map (
+            A => A(15 downto 12),
+            B => B(15 downto 12),
+            CIN => carry2,
+            SUM => digit3_sum,
+            COUT => carry3
+        );
+		  
 
-        SUM <= digit3_sum & digit2_sum & digit1_sum & digit0_sum;
-        CARRY_OUT <= carry3;
-    end process;
-end Behavioral;	
+    SUM <= digit3_sum & digit2_sum & digit1_sum & digit0_sum;
+    CARRY_OUT <= carry3;
+
+
+end Behavioral;
