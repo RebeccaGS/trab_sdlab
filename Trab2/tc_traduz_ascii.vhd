@@ -14,21 +14,22 @@ use ieee.numeric_std.all;
 
 
 -- ENTIDADE
-entity tc__traduz_ascii is
+entity tc_traduz_ascii is
     port (
         tecla_entrada: in std_logic_vector(7 downto 0); -- código da tecla recebida do teclado.
         tecla_ascii: out std_logic_vector(7 downto 0) -- código ASCII correspondente à tecla pressionada.
     );
-end tc__traduz_ascii;
+end tc_traduz_ascii;
 
 
 -- ARQUITETURA
 -- conversão dos códigos de tecla para códigos ASCII:
-architecture Behavioral of tc__traduz_ascii is
+architecture Behavioral of tc_traduz_ascii is
     begin
     with tecla_entrada select
         tecla_ascii <=
         -- saida eh isso >quando< entrada do teclado for aquilo, -- num correspondente
+        --   ascii           teclado
             "00110000" when "01000101",  -- 0
             "00110001" when "00010110",  -- 1
             "00110010" when "00011110",  -- 2
@@ -43,4 +44,3 @@ architecture Behavioral of tc__traduz_ascii is
             "00001101" when "01011010",  -- (enter, cr)
             "00101010" when others;      -- *
 end Behavioral;
-

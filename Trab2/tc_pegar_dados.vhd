@@ -15,7 +15,7 @@ use ieee.numeric_std.all;
 
 
 -- ENTIDADE
-entity tc__pegar_dados is
+entity tc_pegar_dados is
    port (
       sinal_clock, sinal_reset: in  std_logic;
       dados_teclado, clock_teclado: in  std_logic;  -- key data, key clock
@@ -23,12 +23,12 @@ entity tc__pegar_dados is
       final_recebimento: out  std_logic; -- indica quando um byte de dados foi completamente recebido.
       dados_saida: out std_logic_vector(7 downto 0)
    );
-end tc__pegar_dados;
+end tc_pegar_dados;
 
 
 
 -- ARQUITETURA
-architecture Behavioral of tc__pegar_dados is
+architecture Behavioral of tc_pegar_dados is
     -- estados da máquina para gerenciar o processo de recepção de dados do teclado. FSM (máquina de estados finitos)
     -- idle: (Ocioso) - estado inicial e de espera da FSM - receptor está aguardando para detectar o início da transmissão de dados do teclado.
     -- dps: (Data Processing State) - Neste estado, os bits de dados estão sendo recebidos do teclado. dps processa os 8 bits de dados, 1 bit de paridade e 1 bit de parada.
