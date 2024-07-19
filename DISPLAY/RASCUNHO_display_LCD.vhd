@@ -17,7 +17,7 @@ use ieee.numeric_std.all;
 
 -- ENTIDADE
 entity display_lcd is
-    Port ( NUMERO: in std_logic_vector(3 downto 0); --Entrada de 4 bits.
+    Port ( NUMERO: in std_logic_vector(3 downto 0); --num a ser exibido em bcd
            BOTAO: in std_logic; --Botão de entrada
            sinal_reset: in std_logic; --Sinal de reset.
            sinal_clock: in std_logic; --Sinal de clock.
@@ -27,46 +27,32 @@ entity display_lcd is
            RS: out std_logic; --Sinal de registro de seleção do LCD.
            RW: out std_logic; --Sinal de leitura/escrita do LCD.
            OE: out std_logic; --Sinal de habilitação de saída.
-           ok, okWr: out std_logic); --Sinais de controle de estado.
+           ok, okWr: out std_logic); --Sinais de controle de qnd eh permitida escrita
 end display_lcd;
+
+
 
 -- ARQUITETURA
 architecture Behavioral of display_lcd is
 
 -- Objetivo: Controlar um display de cristal líquido (LCD) através de um sistema digital.
 
--- 1- Inicialização do LCD:
--- O código inicia o LCD, configurando-o com comandos específicos para definir o modo de operação,
--- tamanho do caractere, entre outros parâmetros. Isso é feito através da máquina de estados estado_MaqEscrita.
-
--- 2- Escrita de Caracteres:
--- Uma vez inicializado, o código pode enviar caracteres para o LCD para serem exibidos. Isso é feito
--- na máquina de estados MaqE_escritaLCD, que controla o processo de escrita de dados no LCD.
-
--- 3- Temporização e Controle de Estado:
--- O código utiliza contadores e temporizadores (contador, delayOK, clkCount) para garantir que os comandos
--- e dados sejam enviados ao LCD nos momentos adequados, respeitando as especificações temporais do dispositivo.
-
--- 4- Interface com o Sistema Externo: 
--- Há portas de entrada (NUMERO, BOTAO, CLK, rst) e portas de saída (LED, LCD_DB, RS, RW, OE, ok, okWr)
--- que conectam o código VHDL ao sistema externo que controla ou utiliza o LCD.
-
--- 5- Controle de Estado e Transições: 
--- A lógica de controle implementada garante que o sistema siga uma sequência de estados predefinidos 
--- (stFunctionSet, stDisplayCtrlSet, stDisplayClear, stInitDne, stActWr, stCharDelay, etc.) para realizar 
--- as operações necessárias de inicialização e escrita no LCD.
-
-    
+    ---------------------------------------------------
+    ---------------------------------------------------
     type MaqE_controleLCD is ( -- maq de estados principal p/ controle do lcd - controla a sequência geral de inicialização e operações do LCD 
         -- Estados dessa maquina:
-        stFunctionSet, -- Envia o comando de configuração da função do LCD. Isso define parâmetros como o comprimento dos dados (8 bits ou 4 bits), número de linhas (1 ou 2) e tipo de fonte (5x8 ou 5x11).
-        stDisplayCtrlSet, -- Envia o comando de controle do display. Isso liga ou desliga o display, o cursor, e o piscar do cursor.
-        stDisplayClear, -- Envia o comando para limpar o display, apagando todas as informações mostradas.
-        stPowerOn_Delay, -- Introduz um atraso após ligar o LCD para garantir que ele tenha tempo suficiente para se inicializar corretamente.
+        stFunctionSet, -- Define parâmetros como: comprimento dos dados (8 bits ou 4 bits), número de linhas (1 ou 2) e tipo de fonte (5x8 ou 5x11).
         stFunctionSet_Delay, -- Introduz um atraso após enviar o comando stFunctionSet.
+
+        stDisplayCtrlSet, -- Isso liga ou desliga o display, o cursor, e o piscar do cursor.
         stDisplayCtrlSet_Delay, -- Introduz um atraso após enviar o comando stDisplayCtrlSet.
+
+        stDisplayClear, -- limpar o display, apagando todas as informações mostradas.
         stDisplayClear_Delay, -- Introduz um atraso após enviar o comando stDisplayClear.
-        stInitDne, -- Indica que a inicialização do LCD está concluída e o sistema está pronto para operações normais.
+
+        stInitDne, -- LCD iniciado e sistema pronto para operaçoes.
+        stPowerOn_Delay, -- Introduz um atraso após ligar o LCD para garantir que ele tenha tempo suficiente para se inicializar corretamente.
+        
         stActWr, -- Estado ativo de escrita, onde caracteres são escritos no LCD.
         stCharDelay -- Introduz um atraso entre escritas consecutivas de caracteres para garantir que cada comando tenha tempo de ser processado pelo LCD.
     );
@@ -92,51 +78,67 @@ architecture Behavioral of display_lcd is
     signal writeDone: std_logic := '0'; -- qnd writedone = 1 significa que op de escrita foi finalizada
     signal delayOK: std_logic := '0'; -- delayOK é usado para indicar quando um atraso específico foi completado. Quando delayOK é '1', isso significa que o atraso foi alcançado.
 
-    -- LCD Commands
-    -- Define uma matriz de comandos para o LCD, onde cada comando é 
-    -- um vetor de 10 bits (2 bits de controle e 8 bits de dados).
    
-    type LCD_CMDS_T is array(23 downto 0) of std_logic_vector(9 downto 0);
-    signal LCD_CMDS: LCD_CMDS_T := (
-        0 => "00" & X"3C",
-        1 => "00" & X"0C",
-        2 => "00" & X"01",
-        3 => "00" & X"02",
-        4 => "10" & X"30",
-        5 => "10" & X"65",
-        6 => "10" & X"6C",
-        7 => "10" & X"6C",
-        8 => "10" & X"6F",
-        9 => "10" & X"20",
-        10 => "10" & X"46",
-        11 => "10" & X"72",
-        12 => "10" & X"6F",
-        13 => "10" & X"6D",
-        14 => "10" & X"20",
-        15 => "10" & X"44",
-        16 => "10" & X"69",
-        17 => "10" & X"67",
-        18 => "10" & X"69",
-        19 => "10" & X"6C",
-        20 => "10" & X"65",
-        21 => "10" & X"6E",
-        22 => "10" & X"74",
+    ---------------------------------------------------
+    ---------------------------------------------------
+
+    -- Comandos LCD
+
+    -- dado tipo lcd_cmds_t matriz com 24 elementos onde cada elemento é vetor de 10 bits
+    -- cada elemento representa um comando ou dado a ser enviado ao LCD.
+    type LCD_CMDS_T is array(23 downto 0) of std_logic_vector(9 downto 0); 
+    
+    signal LCD_CMDS: LCD_CMDS_T := ( -- sinal lcd_cmds do tipo lcd_cmds_t
+        -- Bits (9,8): sinais de controle rs e rw / bits (7 a 0): comando / dado a ser enviado
+        -- elemento 0, vetor de 10 bits, comando / dado a ser enviado ao lcd
+        
+        0 => "00" & X"3C", -- "00": RS = 0 (comando), RW = 0 (escrita). || Comando de configuração
+        1 => "00" & X"0C", -- Comando para ligar o display sem cursor
+        2 => "00" & X"01", -- Comando para limpar o display
+        3 => "00" & X"02", -- Comando para retornar o cursor para a posição inicial
+
+        -- Comandos para escrever "Hello, World"
+        4 => "10" & X"48",   -- 'H'
+        5 => "10" & X"65",   -- 'e'
+        6 => "10" & X"6C",   -- 'l'
+        7 => "10" & X"6C",   -- 'l'
+        8 => "10" & X"6F",   -- 'o'
+        9 => "10" & X"2C",   -- ','
+        10 => "10" & X"20",  -- ' ' (espaço)
+        11 => "10" & X"57",  -- 'W'
+        12 => "10" & X"6F",  -- 'o'
+        13 => "10" & X"72",  -- 'r'
+        14 => "10" & X"6C",  -- 'l'
+        15 => "10" & X"64",  -- 'd'
+        16 => "10" & X"21",  -- '!'
+        
+        -- Completa os 24 elementos
+        17 => "00" & X"02", -- Comando para retornar o cursor para a posição inicial
+        18 => "00" & X"02",
+        19 => "00" & X"02",
+        20 => "00" & X"02",
+        21 => "00" & X"02",
+        22 => "00" & X"02",
         23 => "00" & X"02"
     );
 
-    -- Define um ponteiro para os comandos do LCD e um sinal de trava (TRAVA).
-    signal lcd_cmd_ptr: integer range 0 to LCD_CMDS'HIGH + 1 := 0;
-    signal TRAVA: std_logic := '1';
+    signal lcd_cmd_ptr: integer range 0 to LCD_CMDS'HIGH + 1 := 0; -- indica qual comando/dado na matriz LCD_CMDS está sendo atualmente processado.
+    signal TRAVA: std_logic := '1'; -- usado para controlar habilitação de certas ops
+
+    ---------------------------------------------------
+    ---------------------------------------------------
 
 begin
 
-    -- Incrementa o contador contador_Clock em cada ciclo de clock e
-    -- define gerar_clock_1micro como um sinal derivado do contador.
+    -- Estas linhas associam os sinais LED e okWr às variáveis TRAVA e ativaMaqE_Escrita,
+    -- respectivamente. LED indica o estado da trava e okWr indica se a máquina de escrita está ativa.
     LED <= TRAVA;
     okWr <= ativaMaqE_Escrita;
 
+
     process (sinal_clock, gerar_clock_1micro)
     begin
+        -- Cada vez que sinal_clock tem uma borda de subida, contador_Clock é incrementado em 1.
         if (sinal_clock = '1' and sinal_clock'event) then
             contador_Clock <= contador_Clock + 1;
         end if;
@@ -144,7 +146,9 @@ begin
 
     gerar_clock_1micro <= contador_Clock(5);
 
-    -- Implementa um contador de delay que é resetado quando delayOK é '1'.
+    
+    -- gerar_clock_1micro tem uma borda de subida: delayok = 1 -> contador resetado
+    -- gerar_clock_1micro tem uma borda de subida: delayok = 0 -> contador++
     process (gerar_clock_1micro, delayOK)
     begin
         if (gerar_clock_1micro = '1' and gerar_clock_1micro'event) then

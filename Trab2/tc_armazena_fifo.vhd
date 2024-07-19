@@ -2,7 +2,7 @@
 -- Sistemas digitais 2024.1 - UFRJ
 -- Autor: Rebecca Gomes Simão e Mariana Garcia 
 -- 
--- Module Name:  tc__armazena_fifo   
+-- Module Name:  tc_armazena_fifo   
 -- Description:  Este código VHDL implementa uma FIFO usando uma combinação de memória de registros e lógica de controle. 
 -- Os ponteiros de leitura e escrita gerenciam as posições dos dados na FIFO, enquanto os sinais cheio e vazio indicam o 
 -- estado da FIFO. O processo é controlado por um sinal de clock e reset, garantindo que as operações sejam sincronizadas 
@@ -16,8 +16,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 -- ENTIDADE
-entity tc__armazena_fifo is
-    Port ( 
+entity tc_armazena_fifo is
         -- Como genericos, as variaveis: largura_dados (8 bits) e largura_endereco (4 bits)
         -- variáveis genéricas em um port map são usadas para parametrizar componentes,
         -- permitindo que diferentes instâncias de um componente possam ter diferentes
@@ -37,15 +36,14 @@ entity tc__armazena_fifo is
         -- fila_vazia, fila_cheia e dados_saida
             fila_vazia, fila_cheia: out std_logic;
             dados_saida: out std_logic_vector (largura_dados-1 downto 0)
-        );
     );
-end tc__armazena_fifo;
+end tc_armazena_fifo;
 
 
 
 -- ARQUITETURA - fifo utiliza de registradores e lógica de controle para armazenar
               -- temporariamente pacotes de dados enquanto eles estão sendo processados
-architecture Behavioral of tc__armazena_fifo is
+architecture Behavioral of tc_armazena_fifo is
 
     -- armazenamento da fifo
     type reg_file_type is array (2**largura_endereco-1 downto 0) of std_logic_vector(largura_dados-1 downto 0);
@@ -93,7 +91,7 @@ architecture Behavioral of tc__armazena_fifo is
         process(sinal_clock,sinal_reset)
         begin
             -- se reset ativo, apaga tudo e coloca o fila_vazia como 1 (pra indicar que reg ta vazio)
-            if (reset='1') then
+            if (sinal_reset='1') then
                 largura_endereco_ptr_reg <= (others=>'0');
                 pont_leitura_0 <= (others=>'0');
                 fila_cheia_reg <= '0';
@@ -157,7 +155,3 @@ architecture Behavioral of tc__armazena_fifo is
         fila_vazia <= fila_vazia_reg;
 
 end Behavioral;
-
-
-
-

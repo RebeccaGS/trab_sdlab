@@ -8,16 +8,6 @@
 --
 ----------------------------------------------------------------------------------
 
-----------------------------------------------------------------------------------
--- Sistemas digitais 2024.1 - UFRJ
--- Autor: Rebecca Gomes Simão e Mariana Garcia 
--- 
--- Module Name:    
--- Description: comunicar com o teclado anexado à FPGA e nos entregar os dados enviados por este periférico.
--- Pegamos essas informações em um sinal de saída chamado dados_saida, que é um vetor de 8 bits
---
-----------------------------------------------------------------------------------
-
 -- BIBLIOTECAS
 library ieee;
 use ieee.std_logic_1164.all;
@@ -25,20 +15,20 @@ use ieee.numeric_std.all;
 
 
 -- ENTIDADE
-entity tc__pegar_dados is
+entity tc_pegar_dados is
    port (
       sinal_clock, sinal_reset: in  std_logic;
-      dados_teclado, clock_teclado: in  std_logic;
-      receptor_enable: in std_logic; -- habilita o receptor
-      final_recebimento_byte: out  std_logic; -- indica quando um byte de dados foi completamente recebido.
+      dados_teclado, clock_teclado: in  std_logic;  -- key data, key clock
+      receptor_on: in std_logic; -- habilita o receptor
+      final_recebimento: out  std_logic; -- indica quando um byte de dados foi completamente recebido.
       dados_saida: out std_logic_vector(7 downto 0)
    );
-end tc__pegar_dados;
+end tc_pegar_dados;
 
 
 
 -- ARQUITETURA
-architecture Behavioral of tc__pegar_dados is
+architecture Behavioral of tc_pegar_dados is
     -- estados da máquina para gerenciar o processo de recepção de dados do teclado. FSM (máquina de estados finitos)
     -- idle: (Ocioso) - estado inicial e de espera da FSM - receptor está aguardando para detectar o início da transmissão de dados do teclado.
     -- dps: (Data Processing State) - Neste estado, os bits de dados estão sendo recebidos do teclado. dps processa os 8 bits de dados, 1 bit de paridade e 1 bit de parada.
@@ -107,15 +97,15 @@ architecture Behavioral of tc__pegar_dados is
     -- No estado idle, se houver uma borda de descida (fall_edge) e rx_en estiver habilitado, começa a receber dados.
     -- No estado dps (recepção de dados), desloca os bits recebidos para b_reg e decrementa n_reg até que todos os bits sejam recebidos.
     -- No estado load, o dado recebido é considerado completo e rx_done_tick é ativado.
-    process(estado_atual,n_reg,b_reg,descida_clk,receptor_enable,dados_teclado)
+    process(estado_atual,n_reg,b_reg,descida_clk,receptor_on,dados_teclado)
     begin
-        final_recebimento_byte <='0';
+        final_recebimento <='0';
         estado_prox <= estado_atual;
         n_next <= n_reg;
         b_next <= b_reg;
         case estado_atual is
             when idle =>
-                if descida_clk='1' and receptor_enable='1' then
+                if descida_clk='1' and receptor_on='1' then
                 -- shift in start bit
                 b_next <= dados_teclado & b_reg(10 downto 1);
                 n_next <= "1001";
@@ -133,7 +123,7 @@ architecture Behavioral of tc__pegar_dados is
             when load =>
                 -- 1 extra clock to complete the last shift
                 estado_prox <= idle;
-                final_recebimento_byte <='1';
+                final_recebimento <='1';
         end case;
     end process;
 
