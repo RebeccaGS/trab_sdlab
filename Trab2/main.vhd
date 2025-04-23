@@ -44,7 +44,7 @@ architecture Behavioral of main is
     port (
         sinal_clock, sinal_reset: in  std_logic;
         dados_teclado, clock_teclado: in  std_logic;
-        receptor_enable: in std_logic;
+        receptor_on: in std_logic;
         final_recebimento_byte: out  std_logic;
         dados_saida: out std_logic_vector(7 downto 0)
     );
@@ -66,10 +66,13 @@ architecture Behavioral of main is
 	end component;
 	 
 	 
-	 component display_traduz_BCD is
-		  Port ( ascii : in STD_LOGIC_VECTOR (7 downto 0);
-				  BCD : out STD_LOGIC_VECTOR (3 downto 0));
-	 end component;
+	 component tc_traduz_ascii is
+		Port (
+        tecla_entrada: in std_logic_vector(7 downto 0); -- código da tecla recebida do teclado.
+        tecla_bcd: out std_logic_vector(3 downto 0)     -- código BCD correspondente à tecla pressionada.
+    );
+		end component;
+
 	 
 	 
 	component bcd_multiplier is
@@ -110,7 +113,7 @@ begin
         sinal_reset => BOTAO_RST,
         dados_teclado => dados_teclado,
         clock_teclado => clock_teclado,
-        receptor_enable => receptor_enable,
+        receptor_on => receptor_enable,
         dados_saida => dados_saida,
         final_recebimento_byte => final_recebimento_byte
     );
@@ -135,9 +138,9 @@ begin
 	 
 	 
     -- Mapeamento do componente ConvAsciiToBCD
-    CONVERSAO: display_traduz_BCD port map (
-        ascii => dados_saida,
-        BCD => BCD
+    CONVERSAO: tc_traduz_ascii port map (
+        tecla_entrada => dados_saida,
+        tecla_bcd => BCD
     );
 
     -- Mapeamento do componente bcd_multiplier

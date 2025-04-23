@@ -37,24 +37,30 @@ end display_lcd;
 architecture Behavioral of display_lcd is
 
 --------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------
 -- 1) cria maqs estados    
-    type MaqE_controleLCD is ( -- maq de estados principal p/ controle do lcd - controla a sequência geral de inicialização e operações do LCD 
+-- MaqE_controleLCD: maq de estados principal p/ controle do lcd - controla a sequência geral de inicialização e operações do LCD 
+-- MaqE_escritaLCD: lida controle de escrita.
+
+    type MaqE_controleLCD is ( 
         -- Estados dessa maquina:
-        stFunctionSet, -- Envia o comando de configuração da função do LCD. Isso define parâmetros como o comprimento dos dados (8 bits ou 4 bits), número de linhas (1 ou 2) e tipo de fonte (5x8 ou 5x11).
-        stDisplayCtrlSet, -- Envia o comando de controle do display. Isso liga ou desliga o display, o cursor, e o piscar do cursor.
-        stDisplayClear, -- Envia o comando para limpar o display, apagando todas as informações mostradas.
-        stPowerOn_Delay, -- Introduz um atraso após ligar o LCD para garantir que ele tenha tempo suficiente para se inicializar corretamente.
+        stFunctionSet, -- configuração da função do LCD - definicao de parâmetros: ex - comprimento dos dados (8 bits ou 4 bits), número de linhas (1 ou 2) e tipo de fonte (5x8 ou 5x11).
         stFunctionSet_Delay, -- Introduz um atraso após enviar o comando stFunctionSet.
+        
+        stDisplayCtrlSet, -- liga ou desliga: o display, o cursor e o piscar do cursor.
         stDisplayCtrlSet_Delay, -- Introduz um atraso após enviar o comando stDisplayCtrlSet.
+
+        stDisplayClear, -- limpar o display
         stDisplayClear_Delay, -- Introduz um atraso após enviar o comando stDisplayClear.
-        stInitDne, -- Indica que a inicialização do LCD está concluída e o sistema está pronto para operações normais.
+
+        stInitDne, -- inicialização do LCD está concluída e o sistema está pronto para operacoes
+        stPowerOn_Delay, -- Introduz um atraso após ligar o LCD para garantir que ele tenha tempo suficiente para se inicializar corretamente.
+        
         stActWr, -- Estado ativo de escrita, onde caracteres são escritos no LCD.
         stCharDelay -- Introduz um atraso entre escritas consecutivas de caracteres para garantir que cada comando tenha tempo de ser processado pelo LCD.
     );
 
 
-    type MaqE_escritaLCD is ( -- lida controle de escrita.
+    type MaqE_escritaLCD is (
         -- Estados dessa maquina:
         stRW, -- Configura os sinais de RS e RW para preparar o LCD para receber dados.
         stEnable, -- Configura o sinal de habilitação (enable) para escrever os dados no LCD. Este estado garante que os dados no barramento estão estáveis antes de ativar o sinal de escrita.
@@ -64,6 +70,9 @@ architecture Behavioral of display_lcd is
 --------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------
 -- 2) declara sinais 
+-- inicializa maqE_controle como stPowerOn_Delay- introduzindo um atraso inicial para permitir a inicialização do LCD.
+-- Em seguida, passa por uma sequência de estados (stFunctionSet, stDisplayCtrlSet, stDisplayClear), enviando comandos ao LCD e introduzindo os atrasos necessários.
+-- Após a inicialização, a FSM entra no estado stInitDne, indicando que o LCD está pronto para operações normais.
 
 
     signal contador_Clock: std_logic_vector(5 downto 0);

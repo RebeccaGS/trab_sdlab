@@ -17,7 +17,7 @@ begin
     -- Conversão dos códigos de tecla para códigos ASCII:
     with tecla_entrada select
         tecla_ascii <=
-            --   ascii     <-      scancode
+            --   ascii           teclado
             "00110000" when "01000101",  -- 0
             "00110001" when "00010110",  -- 1
             "00110010" when "00011110",  -- 2
@@ -35,7 +35,6 @@ begin
     process(tecla_ascii)
     begin
 	  case tecla_ascii is
-            --   ascii     ->              bcd
             when "00110000" => tecla_bcd <= "0000"; -- 0
             when "00110001" => tecla_bcd <= "0001"; -- 1
             when "00110010" => tecla_bcd <= "0010"; -- 2
